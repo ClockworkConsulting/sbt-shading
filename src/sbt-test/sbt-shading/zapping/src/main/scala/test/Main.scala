@@ -22,7 +22,7 @@ object Main extends App {
   if (expectResource && maybeResource.isEmpty) {
     sys.error(s"Resource $resourceName was NOT found on classpath")
   } else if (!expectResource && maybeResource.nonEmpty) {
-    sys.error(s"Resource $resource was unexpectedly on classpath")
+    sys.error(s"Resource $resourceName was unexpectedly on classpath")
   }
 
 }

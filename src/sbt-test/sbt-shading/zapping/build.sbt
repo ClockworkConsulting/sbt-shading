@@ -1,7 +1,7 @@
 
 enablePlugins(ShadingPlugin)
 shadedModules += "org.scala-lang.modules" %% "scala-xml"
-shadingRules += ShadingRule.zap("/scala-xml.properties")
+shadingRules += ShadingRule.zap("scala-xml.properties")
 
 libraryDependencies ++= Seq(
   "org.scala-lang.modules" %% "scala-xml" % "2.2.0",
