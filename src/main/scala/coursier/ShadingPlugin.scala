@@ -1,21 +1,23 @@
 package coursier
 
+import com.eed3si9n.jarjar.PatternElement
+
 import java.io.File
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.util.zip.ZipFile
-
 import com.eed3si9n.jarjar.Rule
 import com.eed3si9n.jarjar.util.CoursierJarProcessor
-import sbt._
-import sbt.Keys._
+import com.eed3si9n.jarjarabrams.ShadePattern.Zap
+import sbt.*
+import sbt.Keys.*
 import sbt.plugins.JvmPlugin
 import sbt.librarymanagement.DependencyBuilders.OrganizationArtifactName
 import sbt.librarymanagement.ScalaModuleInfo
 
 import scala.annotation.tailrec
-import scala.collection.JavaConverters._
-import scala.xml.{Comment, Elem, Node => XmlNode}
+import scala.collection.JavaConverters.*
+import scala.xml.{Comment, Elem, Node as XmlNode}
 import scala.xml.transform.{RewriteRule, RuleTransformer}
 
 object ShadingPlugin extends AutoPlugin {
@@ -25,6 +27,8 @@ object ShadingPlugin extends AutoPlugin {
 
   object Rule {
     import com.eed3si9n.jarjar.Rule
+    import com.eed3si9n.jarjar.Zap
+    import com.eed3si9n.jarjar.PatternElement
 
     def moveUnder(from: String, to: String): Rule =
       rename(s"$from.**", s"$to.$from.@1")
@@ -35,6 +39,13 @@ object ShadingPlugin extends AutoPlugin {
       rule.setResult(to)
       rule
     }
+
+    def zap(pattern: String): PatternElement = {
+      val rule = new Zap
+      rule.setPattern(pattern)
+      rule
+    }
+
   }
 
   private def updateIvyXml(file: File, removeDeps: Set[(String, String)]): Unit = {
@@ -88,7 +99,7 @@ object ShadingPlugin extends AutoPlugin {
     // to be set by users
     val shadedModules = settingKey[Set[OrganizationArtifactName]]("")
     val shadedDependencies = settingKey[Set[ModuleID]]("")
-    val shadingRules = taskKey[Seq[Rule]]("")
+    val shadingRules = taskKey[Seq[PatternElement]]("")
     val validNamespaces = taskKey[Set[String]]("")
     val validEntries = taskKey[Set[String]]("")
 
