@@ -9,11 +9,19 @@ object Main extends App {
 
   // FIXME: Need a test which checks the *UNSHADED* classpath too!
 
-  // Try to load the resource from the classpath
-  val resource = Thread.currentThread().getContextClassLoader.getResource(resourceName)
+  val expectResource =
+    if (args.headOption == Some("--shaded")) {
+      false
+    } else {
+      true
+    }
 
-  if (resource != null) {
-    // Zapped resource was unexpectedly on the classpath.
+  // Try to load the resource from the classpath
+  val maybeResource = Option(Thread.currentThread().getContextClassLoader.getResource(resourceName))
+
+  if (expectResource && maybeResource.isEmpty) {
+    sys.error(s"Resource $resourceName was NOT found on classpath")
+  } else if (!expectResource && maybeResource.nonEmpty) {
     sys.error(s"Resource $resource was unexpectedly on classpath")
   }
 
